@@ -34,6 +34,11 @@ class Player:
     def __repr__(self):
         return "Welcome to the arena, {name}!".format(name=self.name)
     
+    def get_deck(self):
+        print("Here are your available cards:")
+        for card in range(len(self.deck)):
+            print(self.deck[card].get_card_info())
+    
 class Card:
     #This class will be randomized to choose values based off its type
     #It will also be randomly assigned an element
@@ -45,7 +50,7 @@ class Card:
             case 2: self.element = "air"
             case 3: self.element = "fire"
             case 4: self.element = "earth"
-        type_select = rand.randint(1, 3)    #1 = attack card, 2 = defense card, 3 = spell card
+        type_select = rand.randint(1, 3)    #1 = attack card, 2 = defense card, 3 = spell card  #FIXME the distribution isn't good, figure out better way
         if type_select == 1:
             self.type = "attack"
             self.power = rand.randint(1, 20)
@@ -61,20 +66,42 @@ class Card:
 
     def __repr__(self):
         return "This card is a(n) {type} card of the element {element} with {attack} attack and {defense} defense".format(type=self.type, element=self.element, attack=self.power, defense=self.toughness)
+    
+    def get_card_info(self):
+        return self.type
 
 print("Welcome to the Mega Smash card arena!")
-print("First, the prompt will ask for your name. Then, you will choose from one of the four elements")
+print("First, the prompt will ask for your name. Then, you will choose from one of the four elements to embody")
 print("Fire\nEarth\nWater\nAir")
 
 #Define first player parameters
-player1_name = input("Please enter the name of player 1: ")
-player1_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
-player1 = Player(player1_name, player1_element)
+#FIXME commenting out to bypass input for testing purposes
+# player1_name = input("Please enter the name of player 1: ")
+# player1_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
+# player1 = Player(player1_name, player1_element)     
+player1 = Player("Andie", "water")     
 print(player1)
 
 #Define second player parameters
-player2_name = input("Please enter the name of player 2: ")
-player2_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
-player2 = Player(player2_name, player2_element)
+#FIXME commenting out to bypass input for testing purposes
+# player2_name = input("Please enter the name of player 2: ")
+# player2_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
+# player2 = Player(player2_name, player2_element)
+player2 = Player("Ridley", "earth")
 print(player2)
-        
+
+#Create player's decks
+#FIXME commenting out to bypass input for testing purposes
+print("Now, you will be assigned 5 cards to battle with. Press enter to see next card.")
+print(player1.name)
+for index in range(5):
+    player1.deck.append(Card())
+    # input(player1.deck[index])
+print(player2.name)
+for index in range(5):
+    player2.deck.append(Card())
+    # input(player2.deck[index])
+
+round = 1
+print("Let's begin!\nRound {round}".format(round=round))
+player1.get_deck()  #FIXME
