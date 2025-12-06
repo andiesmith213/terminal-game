@@ -1,7 +1,7 @@
 #Pokemon/MTG card game
 #Each player is given 5 cards at random that will be their deck
 #There will be Attack cards, Spell cards and Defense cards
-#The game will go for 3 rounds and each player will get a new, randomly selected card at the end of their turn
+#The game will go for 5 rounds and each player will get a new, randomly selected card at the end of their turn
 #After 3 rounds, the player with the most health wins
 
 #Create a class for the player and classes for each card type
@@ -24,8 +24,6 @@ import random as rand
 
 #Declare classes
 class Player:
-    deck = []
-
     def __init__(self, name, element):
         self.name = name
         self.health = 100
@@ -33,15 +31,22 @@ class Player:
 
     def __repr__(self):
         return "Welcome to the arena, {name}!".format(name=self.name)
+        
+    def set_card_deck(self, deck):
+        self.deck = deck
     
-    def get_deck(self):
+    def get_card_deck(self):
         print("Here are your available cards:")
         for card in range(len(self.deck)):
-            print(self.deck[card].get_card_info())
+            print("{card}. {info}".format(card=card+1, info=self.deck[card].get_card_info()))
+        card_value = int(input("Input the card number you want to use ")) - 1        #need to select the index with a starting value of 0
+        card_info = self.deck.pop(card_value)
+        return card_info
     
 class Card:
     #This class will be randomized to choose values based off its type
     #It will also be randomly assigned an element
+    #Declare class variables
     is_attacking = False
 
     def __init__(self):
@@ -68,40 +73,48 @@ class Card:
         return "This card is a(n) {type} card of the element {element} with {attack} attack and {defense} defense".format(type=self.type, element=self.element, attack=self.power, defense=self.toughness)
     
     def get_card_info(self):
-        return self.type
+        if self.type == "attack":
+            info = "attack {element} card with power = {power}".format(element=self.element, power=self.power)
+        elif self.type == "defense":
+            info = "defense {element} card with toughness = {toughness}".format(element=self.element, toughness=self.toughness)
+        elif self.type == "special":
+            info = "special {element} card with attack = {power} and toughness = {toughness}".format(element=self.element, power=self.power, toughness=self.toughness)
+        else:
+            info = "card info not available"
+        return info
 
+#Main function
 print("Welcome to the Mega Smash card arena!")
 print("First, the prompt will ask for your name. Then, you will choose from one of the four elements to embody")
 print("Fire\nEarth\nWater\nAir")
 
 #Define first player parameters
-#FIXME commenting out to bypass input for testing purposes
-# player1_name = input("Please enter the name of player 1: ")
-# player1_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
-# player1 = Player(player1_name, player1_element)     
-player1 = Player("Andie", "water")     
+player1_name = input("Please enter the name of player 1: ")
+player1_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
+player1 = Player(player1_name, player1_element)   
 print(player1)
 
 #Define second player parameters
-#FIXME commenting out to bypass input for testing purposes
-# player2_name = input("Please enter the name of player 2: ")
-# player2_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
-# player2 = Player(player2_name, player2_element)
-player2 = Player("Ridley", "earth")
+player2_name = input("Please enter the name of player 2: ")
+player2_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
+player2 = Player(player2_name, player2_element)
 print(player2)
 
 #Create player's decks
-#FIXME commenting out to bypass input for testing purposes
-print("Now, you will be assigned 5 cards to battle with. Press enter to see next card.")
-print(player1.name)
+print("Now, you will be assigned 5 cards to battle with.")
+deck1 = []
+deck2 = []
+#Randomly choose and append 5 cards to each players deck
 for index in range(5):
-    player1.deck.append(Card())
-    # input(player1.deck[index])
-print(player2.name)
-for index in range(5):
-    player2.deck.append(Card())
-    # input(player2.deck[index])
+    deck1.append(Card())
+    deck2.append(Card())
+player1.set_card_deck(deck1)
+player2.set_card_deck(deck2)
 
 round = 1
 print("Let's begin!\nRound {round}".format(round=round))
-player1.get_deck()  #FIXME
+print("{player}'s turn!".format(player=player1.name))
+#Provide player with their deck information and have them choose their card
+card = player1.get_card_deck()
+#Card class now stored in card variable, now choose which function to call based off card type
+
