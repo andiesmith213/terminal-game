@@ -25,9 +25,19 @@ from player import Player
 from card import Card
 
 
-def battle(card):
+def battle(card, attacking_player, defending_player):
     if card.type == "attack":
-        pass
+        #Attack card inflicts damage on opponent
+        #if opponent has defenders, they will take damage first
+        defense_value = defending_player.get_defense()
+        if defense_value <= 0:
+            defending_player.set_player_health(card.power)
+            defending_player.set_defense(0)
+        else:
+            if defense_value - card.power < 0:
+                defending_player.set_defense(0)
+            else:
+                defending_player.set_defense(defense_value - card.power)
     if card.type == "defense":
         pass
     if card.type == "special":
@@ -36,15 +46,13 @@ def battle(card):
 
 #Main function
 print("Welcome to the Mega Smash card arena!")
-print("First, the prompt will ask for your name. Then, you will choose from one of the four elements to embody")
-print("Fire\nEarth\nWater\nAir")
 
 #Define first player parameters
 #FIXME commenting out to bypass input for testing purposes
 # player1_name = input("Please enter the name of player 1: ")
 # player1_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
 # player1 = Player(player1_name, player1_element)     
-player1 = Player("Andie", "water")     
+player1 = Player("Andie")     
 print(player1)
 
 #Define second player parameters
@@ -52,7 +60,7 @@ print(player1)
 # player2_name = input("Please enter the name of player 2: ")
 # player2_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
 # player2 = Player(player2_name, player2_element)
-player2 = Player("Ridley", "earth")
+player2 = Player("Ridley")
 print(player2)
 
 #Create player's decks
@@ -74,4 +82,5 @@ print("{player}'s turn!".format(player=player1.name))
 #Provide player with their deck information and have them choose their card
 card = player1.get_card_deck()
 #Card class now stored in card variable, now choose which function to call based off card type
-battle(card)
+#FIXME player class needs a function to keep track of defenders
+battle(card, player1, player2)
