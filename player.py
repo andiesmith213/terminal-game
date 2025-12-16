@@ -1,8 +1,11 @@
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, player_number):
         self.name = name
         self.health = 100
+        self.defense = 0
+        self.attack = 0
+        self.player_id = player_number
 
     def __repr__(self):
         return "Welcome to the arena, {name}!".format(name=self.name)
@@ -35,3 +38,6 @@ class Player:
 
     def get_attack(self):
         return self.attack
+    
+    def get_player_id(self):
+        return self.player_id
