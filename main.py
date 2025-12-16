@@ -20,28 +20,64 @@
 #The amount of damage the card will reflect or inflict will be an attribute of the card class
 #Spell cards will do 1 of 2 things: provide the player with HP or inflict damage to the other player (bypassing any defenders)
 
+#Extensibility: allow the players to choose how many rounds they want to play instead of setting a hard limit, allowing more than 2 players
+
 #Import libraries
 from player import Player
 from card import Card
 
+def report_player_stats(attacking_player, defending_player):
+    pass
 
 def battle(card, attacking_player, defending_player):
     if card.type == "attack":
+        print("POW!\n")
+        print("Player" + str(attacking_player.get_player_id()) + " attacked player" + str(defending_player.get_player_id()))
         #Attack card inflicts damage on opponent
         #if opponent has defenders, they will take damage first
         defense_value = defending_player.get_defense()
         if defense_value <= 0:
             defending_player.set_player_health(card.power)
             defending_player.set_defense(0)
+            print("Player" + str(defending_player.get_player_id()) + " has no defenders")
         else:
             if defense_value - card.power < 0:
                 defending_player.set_defense(0)
             else:
                 defending_player.set_defense(defense_value - card.power)
+            print("Player" + str(defending_player.get_player_id()) + " has " + str(defending_player.get_defense()) + " points of defense")
     if card.type == "defense":
-        pass
+        print("BAM!\n")
+        print("Player" + str(attacking_player.get_player_id()) + " has added a defender to their stats")
+        #A defense cards stats should be added to the defense of the active player
+        attacking_player.set_defense(attacking_player.get_defense() + card.toughness)
     if card.type == "special":
-        pass
+        #Special cards can act as either defenders or attackers
+        #User needs to pick which stat to add to
+        attack_or_defend = input("Would you like to add the special card to your attack stat or your defense stat?\nInput 1 for attack and 2 for defense")
+        print("KABOOM!\n")
+        #Continue to ask the player until they submit a valid input
+        while True:
+            if attack_or_defend == 1:
+                print("Player" + str(attacking_player.get_player_id()) + " attacked player" + str(defending_player.get_player_id()))
+                defense_value = defending_player.get_defense()
+                if defense_value <= 0:
+                    defending_player.set_player_health(card.power)
+                    defending_player.set_defense(0)
+                else:
+                    if defense_value - card.power < 0:
+                        defending_player.set_defense(0)
+                    else:
+                        defending_player.set_defense(defense_value - card.power)
+                break
+            elif attack_or_defend == 2:
+                print("Player" + str(attacking_player.get_player_id()) + " has added a defender to their stats")
+                attacking_player.set_defense(attacking_player.get_defense() + card.toughness)
+                break
+            else:
+                print("Invalid value. Please choose 1 for attack or 2 for defense ")
+    report_player_stats(attacking_player, defending_player)
+
 
 
 #Main function
@@ -51,17 +87,21 @@ print("Welcome to the Mega Smash card arena!")
 #FIXME commenting out to bypass input for testing purposes
 # player1_name = input("Please enter the name of player 1: ")
 # player1_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
-# player1 = Player(player1_name, player1_element)     
-player1 = Player("Andie")     
+players = 1
+# player1 = Player(player1_name, players)     
+player1 = Player("Andie", players)     
 print(player1)
+print(player1.get_player_id())
 
 #Define second player parameters
 #FIXME commenting out to bypass input for testing purposes
 # player2_name = input("Please enter the name of player 2: ")
 # player2_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
 # player2 = Player(player2_name, player2_element)
-player2 = Player("Ridley")
+players += 1
+player2 = Player("Ridley", players)
 print(player2)
+print(player2.get_player_id())
 
 #Create player's decks
 #FIXME commenting out to bypass input for testing purposes
@@ -82,5 +122,7 @@ print("{player}'s turn!".format(player=player1.name))
 #Provide player with their deck information and have them choose their card
 card = player1.get_card_deck()
 #Card class now stored in card variable, now choose which function to call based off card type
-#FIXME player class needs a function to keep track of defenders
+#Battle function will return the updated player classes?
 battle(card, player1, player2)
+print("Player 1 stats " + str(player1.get_attack()) + " " + str(player1.get_defense()) + " " + str(player1.get_player_health()))
+print("Player 2 stats " + str(player2.get_attack()) + " " + str(player2.get_defense()) + " " + str(player2.get_player_health()))
