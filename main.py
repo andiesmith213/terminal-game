@@ -27,39 +27,47 @@ from player import Player
 from card import Card
 
 def report_player_stats(attacking_player, defending_player):
-    pass
+    print(attacking_player.name + "'s stats:")
+    print("\tHealth: " + str(attacking_player.get_player_health()))
+    print("\tDefense: " + str(attacking_player.get_defense()))
+    
+    print(defending_player.name + "'s stats:")
+    print("\tHealth: " + str(defending_player.get_player_health()))
+    print("\tDefense: " + str(defending_player.get_defense()))
 
 def battle(card, attacking_player, defending_player):
     if card.type == "attack":
         print("POW!\n")
-        print("Player" + str(attacking_player.get_player_id()) + " attacked player" + str(defending_player.get_player_id()))
+        print(attacking_player.name + " attacked " + defending_player.name)
         #Attack card inflicts damage on opponent
         #if opponent has defenders, they will take damage first
         defense_value = defending_player.get_defense()
         if defense_value <= 0:
             defending_player.set_player_health(card.power)
             defending_player.set_defense(0)
-            print("Player" + str(defending_player.get_player_id()) + " has no defenders")
+            print(defending_player.name + " has no defenders")
         else:
             if defense_value - card.power < 0:
                 defending_player.set_defense(0)
             else:
                 defending_player.set_defense(defense_value - card.power)
-            print("Player" + str(defending_player.get_player_id()) + " has " + str(defending_player.get_defense()) + " points of defense")
+            print(defending_player.name + " has " + str(defending_player.get_defense()) + " points of defense")
     if card.type == "defense":
         print("BAM!\n")
-        print("Player" + str(attacking_player.get_player_id()) + " has added a defender to their stats")
+        print(attacking_player.name + " has added a defender to their stats")
         #A defense cards stats should be added to the defense of the active player
         attacking_player.set_defense(attacking_player.get_defense() + card.toughness)
     if card.type == "special":
         #Special cards can act as either defenders or attackers
         #User needs to pick which stat to add to
-        attack_or_defend = input("Would you like to add the special card to your attack stat or your defense stat?\nInput 1 for attack and 2 for defense")
+        print("Would you like to add the special card to your attack stat or your defense stat?")
         print("KABOOM!\n")
         #Continue to ask the player until they submit a valid input
+        #FIXME: not working
         while True:
+            attack_or_defend = int(input("Input 1 for attack and 2 for defense "))
             if attack_or_defend == 1:
-                print("Player" + str(attacking_player.get_player_id()) + " attacked player" + str(defending_player.get_player_id()))
+                print(attacking_player.name + " attacked " + defending_player.name)
                 defense_value = defending_player.get_defense()
                 if defense_value <= 0:
                     defending_player.set_player_health(card.power)
@@ -71,11 +79,12 @@ def battle(card, attacking_player, defending_player):
                         defending_player.set_defense(defense_value - card.power)
                 break
             elif attack_or_defend == 2:
-                print("Player" + str(attacking_player.get_player_id()) + " has added a defender to their stats")
+                print(attacking_player.name + " has added a defender to their stats")
                 attacking_player.set_defense(attacking_player.get_defense() + card.toughness)
                 break
             else:
                 print("Invalid value. Please choose 1 for attack or 2 for defense ")
+    print("End of round\n")
     report_player_stats(attacking_player, defending_player)
 
 
@@ -101,7 +110,6 @@ print(player1.get_player_id())
 players += 1
 player2 = Player("Ridley", players)
 print(player2)
-print(player2.get_player_id())
 
 #Create player's decks
 #FIXME commenting out to bypass input for testing purposes
@@ -116,13 +124,21 @@ for index in range(5):
 player1.set_card_deck(deck1)
 player2.set_card_deck(deck2)
 
-round = 1
-print("Let's begin!\nRound {round}".format(round=round))
-print("{player}'s turn!".format(player=player1.name))
-#Provide player with their deck information and have them choose their card
-card = player1.get_card_deck()
-#Card class now stored in card variable, now choose which function to call based off card type
-#Battle function will return the updated player classes?
-battle(card, player1, player2)
-print("Player 1 stats " + str(player1.get_attack()) + " " + str(player1.get_defense()) + " " + str(player1.get_player_health()))
-print("Player 2 stats " + str(player2.get_attack()) + " " + str(player2.get_defense()) + " " + str(player2.get_player_health()))
+print("Let's begin!")
+for round in range(1, 5):
+    print("Round {round}".format(round=round))
+    #Determine who's turn it is based off the round being even or odd
+    if round % 2 == 0:
+        print("{player}'s turn!".format(player=player2.name))
+        #Provide player with their deck information and have them choose their card
+        card = player2.get_card_deck()
+        #Card class now stored in card variable, now choose which function to call based off card type
+        #Battle function will return the updated player classes?
+        battle(card, player2, player1)
+    else:
+        print("{player}'s turn!".format(player=player1.name))
+        #Provide player with their deck information and have them choose their card
+        card = player1.get_card_deck()
+        #Card class now stored in card variable, now choose which function to call based off card type
+        #Battle function will return the updated player classes?
+        battle(card, player1, player2)
