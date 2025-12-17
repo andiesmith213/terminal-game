@@ -35,52 +35,58 @@ def report_player_stats(attacking_player, defending_player):
     print("\tHealth: " + str(defending_player.get_player_health()))
     print("\tDefense: " + str(defending_player.get_defense()))
 
+#Returns the value of the player's defense following an attack
+def determine_defense_damage(defender, damage):
+    #Store current defense value and return information to player
+    current_defense = defender.get_defense()
+    if current_defense <= 0:
+        print(defender.name + " has no defenders")
+    else:
+        print(defender.name + " has defenders")
+
+    #Calculate new defense value after damage
+    new_defense = current_defense - damage
+    defense_value = 0
+    damage_overflow = 0
+    #Set defender's defense = to calculated defense and return value
+    #If more points of damage than defense, the overflow damage impacts the player
+    if new_defense < 0:
+        damage_overflow = abs(new_defense)
+    else:
+        defense_value = new_defense  
+    defender.set_defense(defense_value)
+    # print(new_defense, defense_value, damage_overflow)
+    return damage_overflow
+
 def battle(card, attacking_player, defending_player):
-    if card.type == "attack":
-        print("POW!\n")
-        print(attacking_player.name + " attacked " + defending_player.name)
+    # if card.type == "attack":
+    #     print("POW!\n")
+    #     print(attacking_player.name + " attacked " + defending_player.name)
         #Attack card inflicts damage on opponent
         #if opponent has defenders, they will take damage first
-        defense_value = defending_player.get_defense()
-        if defense_value <= 0:
-            defending_player.set_player_health(card.power)
-            defending_player.set_defense(0)
-            print(defending_player.name + " has no defenders")
-        else:
-            if defense_value - card.power < 0:
-                defending_player.set_defense(0)
-            else:
-                defending_player.set_defense(defense_value - card.power)
-            print(defending_player.name + " has " + str(defending_player.get_defense()) + " points of defense")
+        # damage = card.power
+        # final_damage = determine_defense_damage(defending_player, damage)
+        # defending_player.set_player_health(final_damage)
+        # print(defending_player.name + " has taken " + str(final_damage) + " points of damage")
     if card.type == "defense":
         print("BAM!\n")
-        print(attacking_player.name + " has added a defender to their stats")
+        print(attacking_player.name + " has added defense points to their stats")
         #A defense cards stats should be added to the defense of the active player
-        attacking_player.set_defense(attacking_player.get_defense() + card.toughness)
+        attacking_player.set_defense(card.toughness)
     if card.type == "special":
+        print("KABOOM!\n")
         #Special cards can act as either defenders or attackers
         #User needs to pick which stat to add to
         print("Would you like to add the special card to your attack stat or your defense stat?")
-        print("KABOOM!\n")
         #Continue to ask the player until they submit a valid input
-        #FIXME: not working
         while True:
             attack_or_defend = int(input("Input 1 for attack and 2 for defense "))
             if attack_or_defend == 1:
-                print(attacking_player.name + " attacked " + defending_player.name)
-                defense_value = defending_player.get_defense()
-                if defense_value <= 0:
-                    defending_player.set_player_health(card.power)
-                    defending_player.set_defense(0)
-                else:
-                    if defense_value - card.power < 0:
-                        defending_player.set_defense(0)
-                    else:
-                        defending_player.set_defense(defense_value - card.power)
                 break
             elif attack_or_defend == 2:
-                print(attacking_player.name + " has added a defender to their stats")
-                attacking_player.set_defense(attacking_player.get_defense() + card.toughness)
+                print(attacking_player.name + " has added defense points to their stats")
+                #A defense cards stats should be added to the defense of the active player
+                attacking_player.set_defense(card.toughness)
                 break
             else:
                 print("Invalid value. Please choose 1 for attack or 2 for defense ")
@@ -93,28 +99,19 @@ def battle(card, attacking_player, defending_player):
 print("Welcome to the Mega Smash card arena!")
 
 #Define first player parameters
-#FIXME commenting out to bypass input for testing purposes
 # player1_name = input("Please enter the name of player 1: ")
-# player1_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
 players = 1
-# player1 = Player(player1_name, players)     
-player1 = Player("Andie", players)     
-print(player1)
-print(player1.get_player_id())
+player1 = Player("Riddles", players) 
 
 #Define second player parameters
-#FIXME commenting out to bypass input for testing purposes
 # player2_name = input("Please enter the name of player 2: ")
-# player2_element = input("Please enter which element type you'd like to be (p.s. don't let your oponent see) ")
-# player2 = Player(player2_name, player2_element)
 players += 1
-player2 = Player("Ridley", players)
+player2 = Player("Bean", players)
 print(player2)
 
 #Create player's decks
-#FIXME commenting out to bypass input for testing purposes
 print("Now, you will be assigned 5 cards to battle with.")
-# print(player1.name)
+
 deck1 = []
 deck2 = []
 #Randomly choose and append 5 cards to each players deck
@@ -125,7 +122,7 @@ player1.set_card_deck(deck1)
 player2.set_card_deck(deck2)
 
 print("Let's begin!")
-for round in range(1, 5):
+for round in range(1, 10):
     print("Round {round}".format(round=round))
     #Determine who's turn it is based off the round being even or odd
     if round % 2 == 0:
