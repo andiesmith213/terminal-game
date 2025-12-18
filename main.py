@@ -108,7 +108,7 @@ player1.set_card_deck(deck1)
 player2.set_card_deck(deck2)
 
 print("Let's begin!")
-for round in range(1, 10):
+for round in range(1, 11):
     print("Round {round}".format(round=round))
     #Determine who's turn it is based off the round being even or odd
     if round % 2 == 0:
@@ -123,5 +123,10 @@ for round in range(1, 10):
         #Provide player with their deck information and have them choose their card
         card = player1.get_card_deck()
         #Card class now stored in card variable, now choose which function to call based off card type
-        #Battle function will return the updated player classes?
         battle(card, player1, player2)
+
+print("\nGame, set, match!\n")
+if player1.get_player_health() > player2.get_player_health():
+    print("Player 1 wins!!")
+else:
+    print("Player 2 wins!!")
