@@ -2,25 +2,18 @@
 #Each player is given 5 cards at random that will be their deck
 #There will be Attack cards, Spell cards and Defense cards
 #The game will go for 5 rounds and each player will get a new, randomly selected card at the end of their turn
-#After 3 rounds, the player with the most health wins
+#After the rounds end, the player with the most health wins
 
 #Create a class for the player and classes for each card type
 #The player class will contain their name, HP, and deck
 #The card classes will contain methods with the modifiers it will place on the player class
-#TODO elements will be an extensibility feature, get base game working first
-#Each card has a type: fire, water, earth or air for attack or defense cards, and type "special" for spell cards
-#The element type that is weak against another type will do double damage to that card and half damage if the element is resistant
-#Players will also choose an element, that will not be revealed to the other player
-#Fire: weak against water, resistant to air
-#Water: weak against earth, resistant to fire
-#Earth: weak against air, resistant to water
-#Air: weak against fire, resistant to earth
 #Defense cards will take damage for the player
 #Attack cards will do damage to the other player
 #The amount of damage the card will reflect or inflict will be an attribute of the card class
-#Spell cards will do 1 of 2 things: provide the player with HP or inflict damage to the other player (bypassing any defenders)
+#Spell cards will allow the player to choose from a variety of options. These cards will do 1 of 2 things: attack the other player or add defenders to the player
 
-#Extensibility: allow the players to choose how many rounds they want to play instead of setting a hard limit, allowing more than 2 players
+#FIXME: improve randomization, not well distributed right now
+#Extensibility: allow the players to choose how many rounds they want to play instead of setting a hard limit, allowing more than 2 players, and expanding special card options (provide the player with HP)
 
 #Import libraries
 from player import Player
@@ -36,61 +29,54 @@ def report_player_stats(attacking_player, defending_player):
     print("\tDefense: " + str(defending_player.get_defense()))
 
 #Returns the value of the player's defense following an attack
-def determine_defense_damage(defender, damage):
-    #Store current defense value and return information to player
-    current_defense = defender.get_defense()
-    if current_defense <= 0:
+def determine_damage(defender, damage):
+    #Return defense information to player
+    if defender.get_defense() <= 0:
         print(defender.name + " has no defenders")
     else:
         print(defender.name + " has defenders")
 
     #Calculate new defense value after damage
-    new_defense = current_defense - damage
-    defense_value = 0
+    defender.reduce_defense(damage)
     damage_overflow = 0
     #Set defender's defense = to calculated defense and return value
     #If more points of damage than defense, the overflow damage impacts the player
-    if new_defense < 0:
-        damage_overflow = abs(new_defense)
-    else:
-        defense_value = new_defense  
-    defender.set_defense(defense_value)
-    # print(new_defense, defense_value, damage_overflow)
+    if defender.get_defense() < 0:
+        damage_overflow = abs(defender.get_defense())
+        defender.set_defense(0)
     return damage_overflow
 
 def battle(card, attacking_player, defending_player):
-    # if card.type == "attack":
-    #     print("POW!\n")
-    #     print(attacking_player.name + " attacked " + defending_player.name)
-        #Attack card inflicts damage on opponent
-        #if opponent has defenders, they will take damage first
-        # damage = card.power
-        # final_damage = determine_defense_damage(defending_player, damage)
-        # defending_player.set_player_health(final_damage)
-        # print(defending_player.name + " has taken " + str(final_damage) + " points of damage")
-    if card.type == "defense":
-        print("BAM!\n")
-        print(attacking_player.name + " has added defense points to their stats")
-        #A defense cards stats should be added to the defense of the active player
-        attacking_player.set_defense(card.toughness)
+    #Determine if special card first to know which functions to use
     if card.type == "special":
         print("KABOOM!\n")
+        #Clear chosen option from previous round
+        attack_or_defend = 0
         #Special cards can act as either defenders or attackers
         #User needs to pick which stat to add to
         print("Would you like to add the special card to your attack stat or your defense stat?")
         #Continue to ask the player until they submit a valid input
         while True:
             attack_or_defend = int(input("Input 1 for attack and 2 for defense "))
-            if attack_or_defend == 1:
-                break
-            elif attack_or_defend == 2:
-                print(attacking_player.name + " has added defense points to their stats")
-                #A defense cards stats should be added to the defense of the active player
-                attacking_player.set_defense(card.toughness)
+            if attack_or_defend == 1 or attack_or_defend == 2:
                 break
             else:
                 print("Invalid value. Please choose 1 for attack or 2 for defense ")
-    print("End of round\n")
+    if card.type == "attack" or (card.type == "special" and attack_or_defend == 1):
+        print("\nPOW!\n")
+        print(attacking_player.name + " attacked " + defending_player.name)
+        #Attack card inflicts damage on opponent
+        #if opponent has defenders, they will take damage first
+        damage = card.power
+        player_damage = determine_damage(defending_player, damage)
+        defending_player.reduce_player_health(player_damage)
+        print(defending_player.name + " has taken " + str(player_damage) + " point(s) of damage")
+    if card.type == "defense" or (card.type == "special" and attack_or_defend == 2):
+        print("\nBAM!\n")
+        print(attacking_player.name + " has added defense points to their stats")
+        #A defense cards stats should be added to the defense of the active player
+        attacking_player.add_defense(card.toughness)
+    print("\nEnd of round\n")
     report_player_stats(attacking_player, defending_player)
 
 
