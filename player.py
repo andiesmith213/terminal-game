@@ -1,5 +1,6 @@
 
 class Player:
+    #FIXME: attack variable might not be necessary
     def __init__(self, name, player_number):
         self.name = name
         self.health = 100
@@ -24,14 +25,20 @@ class Player:
     def get_player_health(self):
         return self.health
     
-    def set_player_health(self, value):
+    def reduce_player_health(self, value):
         self.health -= value
     
-    def set_defense(self, toughness):
+    def add_defense(self, toughness):
         self.defense += toughness
+
+    def reduce_defense(self, toughness):
+        self.defense -= toughness
     
     def get_defense(self):
         return self.defense
+    
+    def set_defense(self, toughness):
+        self.defense = toughness
 
     def set_attack(self, attack):
         self.attack += attack
